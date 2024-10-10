@@ -1,4 +1,7 @@
 const token = localStorage.getItem('authToken');
+if (!token) {
+    window.location.href = '../signIn.html';
+}
 const profile = document.getElementById('profile');
 const studentList = document.getElementById('studentList');
 const mainElement = document.querySelector('main');
@@ -56,7 +59,7 @@ function fetchStudents() {
     })
     .catch(error => {
         console.error(error.message);
-        alert(`Error: ${error.message}`);
+        alert(`${error.message}`);
     });
 }
 function fetchLevels(){
@@ -69,7 +72,11 @@ function fetchLevels(){
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) {
+                return response.json().then(errorText => {  // Wait for the promise to resolve
+                    throw new Error(errorText.message);
+                });
+            }
         }
         return response.json();
     })
@@ -79,7 +86,7 @@ function fetchLevels(){
     })
     .catch(error => {
         console.error('Error fetching levels:', error);
-        alert('Failed to load levels data.');
+        alert(`${error.message}`);
     });
 }
 
@@ -206,7 +213,11 @@ function addStudent(applicationId) {
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) {
+                return response.json().then(errorText => {  // Wait for the promise to resolve
+                    throw new Error(errorText.message);
+                });
+            }
         }
         return response.json();
     })
@@ -216,7 +227,7 @@ function addStudent(applicationId) {
     })
     .catch(error => {
         console.error('Error adding student:', error);
-        alert(`Error adding student: ${error.message}`);
+        alert(`${error.message}`);
     });
 }
 function rejectApplication(applicationId) {
@@ -262,9 +273,9 @@ function fetchAStudent(studentId) {
     })
     .then(response => {
         if (!response.ok) {
-            console.log(response);
-            const errorText=response.json();
-            throw new Error(errorText.message || `HTTP error! status: ${response.status}`);
+            return response.json().then(errorText => {  // Wait for the promise to resolve)
+                throw new Error(errorText.message);
+            });
         }
         return response.json();
     })
@@ -274,7 +285,7 @@ function fetchAStudent(studentId) {
     })
     .catch(error => {
         console.error('Error fetching student details:', error);
-        alert(`Error fetching student details: ${error.message}`);
+        alert(`${error.message}`);
     });
 }
 function fetchAdepartment(departmentName) {
@@ -295,8 +306,11 @@ function fetchAdepartment(departmentName) {
     })
     .then(response => {
         if (!response.ok) {
-            console.log(response);
-            throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) {
+                return response.json().then(errorText => {  // Wait for the promise to resolve
+                    throw new Error(errorText.message);
+                });
+            }
         }
         return response.json();
     })
@@ -306,7 +320,7 @@ function fetchAdepartment(departmentName) {
     })
     .catch(error => {
         console.error('Error fetching student details:', error);
-        alert(`Error fetching student details: ${error.message}`);
+        alert(`${error.message}`);
     });
 }
 function fetchAlevel(levelId) {
@@ -329,10 +343,10 @@ function fetchAlevel(levelId) {
         console.log(`Fetching level with ID: ${levelId}`);
         if (!response.ok) {
             console.log(response);
-            if (response.status === 404) {
-                throw new Error('Level not found.');
-            } else {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) {
+                return response.json().then(errorText => {  // Wait for the promise to resolve
+                    throw new Error(errorText.message);
+                });
             }
         }
         return response.json();
@@ -343,7 +357,7 @@ function fetchAlevel(levelId) {
     })
     .catch(error => {
         console.error('Error fetching level details:', error);
-        alert(`Error fetching level details: ${error.message}`);
+        alert(`${error.message}`);
     });
 }
 
@@ -443,8 +457,9 @@ document.getElementById('getDepartments').addEventListener('click', (event) => {
     })
     .then(response => {
         if (!response.ok) {
-            console.log(response);
-            throw new Error(`HTTP error! status: ${response.status}`);
+            return response.json().then(errorText => {  // Wait for the promise to resolve
+                throw new Error(errorText.message);
+            });
         }
         return response.json();
     })
@@ -454,7 +469,7 @@ document.getElementById('getDepartments').addEventListener('click', (event) => {
     })
     .catch(error => {
         console.error('Error fetching departments:', error);
-        alert(`Error fetching departments: ${error.message}`);
+        alert(`${error.message}`);
     });
 })
 document.getElementById('getAdepartment').addEventListener('click', (event) => {
@@ -483,7 +498,9 @@ document.getElementById('addStudent').addEventListener('click', (event) => {
     })
     .then(response => {
         if(!response.ok){
-            throw new Error(`HTTP error! status: ${response.status}`);
+            return response.json().then(errorText => {
+                throw new Error(errorText.message);
+            });
         }
         return response.json();
     })
@@ -493,7 +510,7 @@ document.getElementById('addStudent').addEventListener('click', (event) => {
     })
     .catch(error => {
         console.error('Error fetching level details:', error);
-        alert(`Error fetching level details: ${error.message}`);
+        alert(`${error.message}`);
     });
 });
 document.getElementById('removeStudent').addEventListener('click', (event)=> {
@@ -595,3 +612,131 @@ document.getElementById('removeStudent').addEventListener('click', (event)=> {
         });
     });
 });
+document.getElementById('addDepartment').addEventListener('click', (event)=> {
+    event.preventDefault();
+    mainElement.innerHTML = `
+    <style>
+      /* Main container */
+      form {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+      }
+
+      label {
+        font-size: 16px;
+        color: #555;
+        margin-bottom: 8px;
+        display: block;
+      }
+
+      input[type="text"] {
+        padding: 10px;
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        box-sizing: border-box;
+      }
+
+      input[type="submit"] {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        width: 100%;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      input[type="submit"]:hover {
+        background-color: #45a049;
+      }
+
+      /* Form container */
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+    </style>
+    <h1>Add Department</h1>
+    <form id="addDepartmentForm">
+        <label for="departmentName">Department Name:</label>
+        <input type="text" id="departmentName" required>
+        <input type="submit" value="Add Department">
+    </form>`;
+    
+    document.getElementById('addDepartmentForm').addEventListener('submit', (event) => {
+        event.preventDefault();
+        fetch('http://localhost:5000/api/admins/departments', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-auth-token': token
+            },
+            body: JSON.stringify({
+                departmentName: document.getElementById('departmentName').value
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errorText => {
+                    throw new Error(errorText.message);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            mainElement.innerHTML = `<p>successfully added department</p>
+            ${displayAnObject(data)}`;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('addDepartmentForm').innerHTML = `<p>${error.message}</p>`;
+        });
+    });
+});
+document.getElementById('removeDepartment').addEventListener('click', (event)=> {
+    event.preventDefault();
+    const departmentName=prompt("enter department name");
+    fetch(`http://localhost:5000/api/admins/departments/${departmentName}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-auth-token': token
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorText => {
+                throw new Error(errorText.message);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        mainElement.innerHTML = `<p>${data.message}</p>
+        `;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert(`${error.message}`);
+    });
+})
+document.getElementById('addLesson').addEventListener('click', (event)=> {
+    event.preventDefault();
+    window.location.href='addLesson.html';
+})

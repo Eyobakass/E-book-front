@@ -146,8 +146,12 @@
     </form>
 
     <script>
+        let token=localStorage.getItem('authToken');
+        console.log(token);
+        if (!token) {
+            window.location.href = '../signIn.html';
+        }
         let quizCount = 1;
-
         function addQuiz() {
             const quizDiv = document.getElementById('quizzes');
             quizDiv.innerHTML += `
@@ -174,6 +178,71 @@
                 contentInput.style.height = "40px"; // Adjust height for video/audio URLs
             }
         }
+        const form = document.getElementById('lessonForm');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting traditionally
+
+            const formData = new FormData(form);
+            
+            // Build the lessons object based on form input
+            const lesson = {
+                lesson: Number(formData.get('lessonNumber')),
+                content: {
+                    type: formData.get('content[type]'),
+                    data: formData.get('content[data]')
+                },
+                quiz: []
+            };
+
+            // Gather quiz data
+            let quizIndex = 0;
+            while (formData.get(`quiz[${quizIndex}][question]`)) {
+                const quiz = {
+                    question: formData.get(`quiz[${quizIndex}][question]`),
+                    options: formData.get(`quiz[${quizIndex}][options]`).split(','), // Split comma-separated options into an array
+                    correctAnswer: formData.get(`quiz[${quizIndex}][correctAnswer]`)
+                };
+                lesson.quiz.push(quiz);
+                quizIndex++;
+            }
+
+            // Extract departmentName and levelId from formData for URL params
+            const departmentName = formData.get('departmentName');
+            const levelId = formData.get('levelId');
+
+            // Now send this data as JSON via PUT request to the correct route
+            fetch(`http://localhost:5000/api/admins/${departmentName}/${levelId}/addAlesson`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
+                },
+                body: JSON.stringify({
+                    lessonNumber: formData.get('lessonNumber'),
+                    content: lesson.content,
+                    quizes: lesson.quiz // This matches the "quiz" field in your backend
+                }), // Convert the object to JSON
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errorText => {
+                        throw new Error(errorText.message);
+                    })
+                }
+                return response.json(); // Parse JSON response
+            })
+            .then(data => {
+                console.log('Success:', data);
+                alert("Lesson added successfully") // Handle success
+                // Optionally, redirect or show a success message
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert(`${error.message}`); // Handle error
+                // Optionally, show an error message
+            });
+        });
+
     </script>
 </body>
 </html>

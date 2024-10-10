@@ -160,6 +160,9 @@
         let lessonCount = 1;
         let finalQuestionCount = 1;
         let token=window.localStorage.getItem('authToken');
+        if (!token) {
+            window.location.href = '../signIn.html';
+        }
         console.log(token);
         function addLesson() {
             const lessonsDiv = document.getElementById('lessons');
