@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1, h3 {
+            color: #333;
+            text-align: center;
+        }
+
+        form {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+
+        input[type="text"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            height: 100px;
+        }
+
+        input[type="submit"], button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            display: inline-block;
+        }
+
+        button {
+            background-color: #007BFF;
+        }
+
+        input[type="submit"]:hover, button:hover {
+            background-color: #45a049;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .quiz-section, .final-section {
+            margin-top: 15px;
+        }
+
+        .remove-button {
+            background-color: #ff4d4d;
+        }
+
+        .remove-button:hover {
+            background-color: #e63939;
+        }
+    </style>
+</head>
+<body>
+    <h1>Level Form</h1>
+    <form id="levelForm" action="/submit-level" method="POST">
+        <!-- Level Name -->
+        <div class="section">
+            <label for="name">Level Name:</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+
+        <!-- Level Number -->
+        <div class="section">
+            <label for="level">Level (1-15):</label>
+            <input type="number" id="level" name="level" min="1" max="15" required>
+        </div>
+
+        <!-- Lessons -->
+        <h3>Lessons:</h3>
+        <div id="lessons" class="section">
+            <div class="lesson">
+                <label for="lessonTitle">Lesson Title:</label>
+                <input type="text" name="lessons[0][title]" required>
+
+                <label for="lessonNumber">Lesson Number:</label>
+                <input type="number" name="lessons[0][lesson]" required>
+
+                <!-- Lesson Content Type -->
+                <label for="lessonContentType">Content Type:</label>
+                <select name="lessons[0][content][type]" required onchange="adjustInputSize(this)">
+                    <option value="text">Text</option>
+                    <option value="video">Video</option>
+                    <option value="audio">Audio</option>
+                </select>
+
+                <!-- Lesson Content Data -->
+                <label for="lessonContentData">Content Data (URL, Text, or Audio):</label>
+                <textarea name="lessons[0][content][data]" id="contentData0"></textarea>
+
+                <!-- Quiz for Lesson -->
+                <h4>Lesson Quiz:</h4>
+                <div class="quiz-section" id="quiz0">
+                    <label for="quizQuestion">Quiz Question:</label>
+                    <input type="text" name="lessons[0][quiz][0][question]" required>
+
+                    <label for="quizOptions">Quiz Options (Comma-separated):</label>
+                    <input type="text" name="lessons[0][quiz][0][options]" required>
+
+                    <label for="quizCorrectAnswer">Correct Answer:</label>
+                    <input type="text" name="lessons[0][quiz][0][correctAnswer]" required>
+                </div>
+                <button type="button" onclick="addQuizQuestion(0)">Add Another Quiz Question</button>
+            </div>
+        </div>
+        <button type="button" onclick="addLesson()">Add Another Lesson</button>
+        <br><br>
+
+        <!-- Final Questions -->
+        <h3>Final Exam Questions:</h3>
+        <div id="final" class="section">
+            <div class="final-section" id="final0">
+                <label for="finalQuestion">Question:</label>
+                <input type="text" name="final[0][question]" required>
+
+                <label for="finalOptions">Options (Comma-separated):</label>
+                <input type="text" name="final[0][options]" required>
+
+                <label for="finalCorrectAnswer">Correct Answer:</label>
+                <input type="text" name="final[0][correctAnswer]" required>
+            </div>
+        </div>
+        <button type="button" onclick="addFinalQuestion()">Add Another Final Question</button>
+        <br><br>
+
+        <input type="submit" value="Submit Level">
+    </form>
+
+    <script>
+        let lessonCount = 1;
+        let finalQuestionCount = 1;
+        let token=window.localStorage.getItem('authToken');
+        console.log(token);
+        function addLesson() {
+            const lessonsDiv = document.getElementById('lessons');
+            lessonsDiv.innerHTML += `
+                <br><br>
+                <div class="lesson">
+                    <label for="lessonTitle">Lesson Title:</label>
+                    <input type="text" name="lessons[${lessonCount}][title]" required>
+
+                    <label for="lessonNumber">Lesson Number:</label>
+                    <input type="number" name="lessons[${lessonCount}][lesson]" required>
+
+                    <label for="lessonContentType">Content Type:</label>
+                    <select name="lessons[${lessonCount}][content][type]" required onchange="adjustInputSize(this)">
+                        <option value="text">Text</option>
+                        <option value="video">Video</option>
+                        <option value="audio">Audio</option>
+                    </select>
+
+                    <label for="lessonContentData">Content Data (URL, Text, or Audio):</label>
+                    <textarea name="lessons[${lessonCount}][content][data]" id="contentData${lessonCount}"></textarea>
+
+                    <h4>Lesson Quiz:</h4>
+                    <div class="quiz-section" id="quiz${lessonCount}">
+                        <label for="quizQuestion">Quiz Question:</label>
+                        <input type="text" name="lessons[${lessonCount}][quiz][0][question]" required>
+
+                        <label for="quizOptions">Quiz Options (Comma-separated):</label>
+                        <input type="text" name="lessons[${lessonCount}][quiz][0][options]" required>
+
+                        <label for="quizCorrectAnswer">Correct Answer:</label>
+                        <input type="text" name="lessons[${lessonCount}][quiz][0][correctAnswer]" required>
+                    </div>
+                    <button type="button" onclick="addQuizQuestion(${lessonCount})">Add Another Quiz Question</button>
+                </div>
+            `;
+            lessonCount++;
+        }
+
+        function addQuizQuestion(lessonIndex) {
+            const quizDiv = document.getElementById(`quiz${lessonIndex}`);
+            const quizCount = quizDiv.children.length / 3; // Each quiz question has 3 inputs
+            quizDiv.innerHTML += `
+                <br>
+                <label for="quizQuestion">Quiz Question:</label>
+                <input type="text" name="lessons[${lessonIndex}][quiz][${quizCount}][question]" required>
+
+                <label for="quizOptions">Quiz Options (Comma-separated):</label>
+                <input type="text" name="lessons[${lessonIndex}][quiz][${quizCount}][options]" required>
+
+                <label for="quizCorrectAnswer">Correct Answer:</label>
+                <input type="text" name="lessons[${lessonIndex}][quiz][${quizCount}][correctAnswer]" required>
+            `;
+        }
+
+        function addFinalQuestion() {
+            const finalDiv = document.getElementById('final');
+            finalDiv.innerHTML += `
+                <br>
+                <div class="final-section" id="final${finalQuestionCount}">
+                    <label for="finalQuestion">Question:</label>
+                    <input type="text" name="final[${finalQuestionCount}][question]" required>
+
+                    <label for="finalOptions">Options (Comma-separated):</label>
+                    <input type="text" name="final[${finalQuestionCount}][options]" required>
+
+                    <label for="finalCorrectAnswer">Correct Answer:</label>
+                    <input type="text" name="final[${finalQuestionCount}][correctAnswer]" required>
+                </div>
+            `;
+            finalQuestionCount++;
+        }
+
+        function adjustInputSize(selectElement) {
+            const contentInput = selectElement.nextElementSibling;
+            if (selectElement.value === "text") {
+                contentInput.style.height = "100px";
+            } else {
+                contentInput.style.height = "40px"; // Adjust height for URLs or single lines
+            }
+        }
+        document.getElementById('levelForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const formData = new FormData(this); // Create a FormData object from the form
+            const data = {
+                levelName: formData.get('name'),
+                levelNumber: parseInt(formData.get('level')),
+                lessons: [],
+                final: []
+            };
+
+            // Collect lessons
+            for (let i = 0; i < lessonCount; i++) {
+                const lessonTitle = formData.get(`lessons[${i}][title]`);
+                const lessonNumber = parseInt(formData.get(`lessons[${i}][lesson]`));
+                const contentType = formData.get(`lessons[${i}][content][type]`);
+                const contentData = formData.get(`lessons[${i}][content][data]`);
+
+                const lessonQuiz = [];
+                let quizCount = 0;
+                while (formData.get(`lessons[${i}][quiz][${quizCount}][question]`) !== null) {
+                    const question = formData.get(`lessons[${i}][quiz][${quizCount}][question]`);
+                    const options = formData.get(`lessons[${i}][quiz][${quizCount}][options]`).split(',').map(option => option.trim());
+                    const correctAnswer = formData.get(`lessons[${i}][quiz][${quizCount}][correctAnswer]`);
+
+                    lessonQuiz.push({ question, options, correctAnswer });
+                    quizCount++;
+                }
+
+                data.lessons.push({
+                    lesson: lessonNumber,
+                    Title: lessonTitle,
+                    content: {
+                        type: contentType,
+                        data: contentData
+                    },
+                    quiz: lessonQuiz
+                });
+            }
+
+            // Collect final questions
+            for (let j = 0; j < finalQuestionCount; j++) {
+                const finalQuestion = formData.get(`final[${j}][question]`);
+                const finalOptions = formData.get(`final[${j}][options]`).split(',').map(option => option.trim());
+                const finalCorrectAnswer = formData.get(`final[${j}][correctAnswer]`);
+
+                data.final.push({ question: finalQuestion, options: finalOptions, correctAnswer: finalCorrectAnswer });
+            }
+
+            // Send the data to your server
+            fetch('http://localhost:5000/api/admins/levels', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
+                },
+                body: JSON.stringify(data), // Convert the data object to JSON
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json(); // Parse JSON response
+            })
+            .then(data => {
+                console.log('Success:', data); // Handle success
+                // Optionally, redirect or show a success message
+            })
+            .catch(error => {
+                console.error('Error:', error); // Handle error
+                // Optionally, show an error message
+            });
+        });
+
+    </script>
+</body>
+</html>

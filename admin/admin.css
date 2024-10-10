@@ -1,0 +1,134 @@
+/* General reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    height: 100vh;
+    background-color: #f8f9fa; /* Light background */
+}
+
+/* Sidebar */
+aside {
+    width: 300px;
+    height: 100vh;
+    background-color: #000000; /* Clean white sidebar */
+    border-right: 1px solid #ddd; /* Subtle border */
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: center;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+}
+
+.profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 40px;
+    background-color: rgb(0, 0, 0);
+}
+
+.profile img {
+    width: 100px;
+    height: 80px;
+    border-radius: 50%; /* Round profile picture */
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
+.profile div {
+    font-size: 16px;
+    color: #bdbdbd; /* Dark text */
+    text-align: center;
+}
+
+/* Buttons Section */
+#buttons {
+    max-height: 70%; /* Set a max-height to create a scrolling effect */
+    overflow-y: auto; /* Allow vertical scrolling */
+    overflow-x: auto; /* Allow horizontal scrolling */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%; /* Make buttons full width */
+}
+
+#buttons button {
+    width: 90%;
+    padding: 10px 15px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 8px;
+    background-color: #1d227e; /* Coursera-style blue */
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#buttons button:hover {
+    background-color: #4a339f; /* Darker blue on hover */
+}
+
+/* Main Content */
+main {
+    flex: 1;
+    padding: 20px;
+    background-color: #4f5458; /* Light gray background for content area */
+    overflow-y: auto;
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 768px) {
+    aside {
+        width: 250px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        flex-direction: column;
+    }
+    aside {
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 10px 0;
+        box-shadow: none;
+    }
+    #buttons {
+        flex-direction: row; /* Change to row layout */
+        overflow-x: auto; /* Allow horizontal scrolling */
+        padding: 10px 0; /* Add padding */
+    }
+    #buttons button {
+        width: auto; /* Allow buttons to take their natural width */
+        margin: 0 5px; /* Space between buttons */
+        padding: 10px; /* Button padding */
+        font-size: 14px; /* Smaller font size */
+    }
+    main {
+        padding: 10px;
+    }
+}
+
+/* CSS for sliding effect */
+#buttons::-webkit-scrollbar {
+    height: 8px; /* Height of the horizontal scrollbar */
+}
+
+#buttons::-webkit-scrollbar-thumb {
+    background-color: #007bff; /* Color of the scrollbar */
+    border-radius: 10px; /* Rounded corners */
+}
+
+#buttons::-webkit-scrollbar-thumb:hover {
+    background-color: #0056b3; /* Darker on hover */
+}

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sign-Up</title>
+        <link rel="stylesheet" href="signIn.css">
+    </head>
+    <body>
+        <img src="Final.png">
+        <h1>በኢትዮጵያ ኦርቶዶክስ ቤተክርስቲያን በአዲስ አበባ ሀገረ ስብከት የደብረ ይድራስ ቅዱስ ጊዮርጊስ ቤተክርስቲያን ፍሬ ሃይማኖት ሰንበት ትምህርት ቤት ትምህርት ክፍል የ E-learning መማሪያ</h1>
+        <form id="form">
+            <section class="auth-input">
+                <div class="input-group">
+                    <label for="username">Name:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="input-group">
+                    <label for="phone">Phone:</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+            </section>
+            <section >
+                <button id= 'submit'type="submit">Apply</button>
+                <button type="reset" onclick="window.location.href='signIn.html'">Go to Sign-In Button --></button>
+            </section>
+        </form>
+        <p id="alternative"></p>
+        <script src="signUp.js"></script>
+    </body>
+</html>
