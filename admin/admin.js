@@ -389,36 +389,92 @@ function displayLevelDetails(data) {
 
 
 function displayAnObject(obj, level = 0) {
-    // Set color variables for top-level and nested elements
-    const topLevelColor = '#3498DB'; // Blue color for top-level keys
-    const nestedColor = '#27AE60';   // Green color for nested elements
-    const textColor = level === 0 ? topLevelColor : nestedColor; // Determine the color based on the level
+    // Define styling options
+    const topLevelColor = '#34495E'; // Darker blue for top-level
+    const nestedColor = '#1ABC9C';   // Clean green for nested
+    const textColor = level === 0 ? topLevelColor : nestedColor; // Determine color by level
+    const borderColor = '#E0E0E0';   // Light gray for borders
+    const fontFamily = 'Segoe UI, Tahoma, Geneva, sans-serif'; // Modern, clean font
+    const backgroundColor = '#F9F9F9'; // Soft background for better readability
+    const cardBackground = '#FFFFFF'; // White card-like background
 
+    // Iterate through object keys
     Object.keys(obj).forEach(key => {
         let value = obj[key];
 
         // Handle arrays
         if (Array.isArray(value)) {
             mainElement.innerHTML += `
-                <div style="margin-left: ${level * 20}px; font-weight: bold; color: ${textColor};">${key}:</div>
-                <ul style="margin-left: ${(level + 1) * 20}px; color: ${textColor};">
-                    ${value.map(item => `<li>${typeof item === 'object' ? JSON.stringify(item, null, 2) : item}</li>`).join('')}
+                <div style="
+                    margin-left: ${level * 20}px;
+                    font-weight: bold;
+                    color: ${textColor};
+                    font-family: ${fontFamily};
+                    padding: 8px;
+                    border-radius: 6px;
+                    background: ${backgroundColor};
+                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                    margin-bottom: 8px;">
+                    ${key}:
+                </div>
+                <ul style="
+                    margin-left: ${(level + 1) * 20}px;
+                    padding-left: 16px;
+                    color: #555;
+                    list-style-type: disc;
+                    font-family: ${fontFamily};
+                    ">
+                    ${value.map(item => `
+                        <li style="
+                            background: ${cardBackground};
+                            padding: 8px;
+                            margin-bottom: 4px;
+                            border-radius: 6px;
+                            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
+                            ${typeof item === 'object' ? JSON.stringify(item, null, 2) : item}
+                        </li>`).join('')}
                 </ul>
             `;
         } 
         // Handle nested objects
         else if (typeof value === 'object' && value !== null) {
             mainElement.innerHTML += `
-                <div style="margin-left: ${level * 20}px; font-weight: bold; color: ${textColor};">${key}:</div>
-                <div style="margin-left: ${(level + 1) * 20}px; border-left: 2px solid #BDC3C7; padding-left: 10px;">
+                <div style="
+                    margin-left: ${level * 20}px;
+                    font-weight: bold;
+                    color: ${textColor};
+                    font-family: ${fontFamily};
+                    padding: 8px;
+                    border-radius: 6px;
+                    background: ${backgroundColor};
+                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                    margin-bottom: 8px;">
+                    ${key}:
+                </div>
+                <div style="
+                    margin-left: ${(level + 1) * 20}px;
+                    padding-left: 12px;
+                    border-left: 2px solid ${borderColor};
+                    background: ${backgroundColor};
+                    border-radius: 6px;
+                    padding: 8px;
+                    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
             `;
-            displayAnObject(value, level + 1); // Recursively call for nested objects
+            displayAnObject(value, level + 1); // Recursive call for nested objects
             mainElement.innerHTML += `</div>`;
         } 
         // Handle primitive types
         else {
             mainElement.innerHTML += `
-                <p style="margin-left: ${level * 20}px; color: ${textColor};">
+                <p style="
+                    margin-left: ${level * 20}px;
+                    color: ${textColor};
+                    font-family: ${fontFamily};
+                    padding: 4px 8px;
+                    background: ${cardBackground};
+                    border-radius: 4px;
+                    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+                    margin-bottom: 4px;">
                     <strong>${key}</strong>: ${value}
                 </p>`;
         }
